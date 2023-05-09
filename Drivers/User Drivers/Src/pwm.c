@@ -1,0 +1,182 @@
+/*
+ * pwm.c
+ *
+ *  Created on: Apr 10, 2023
+ *      Author: ataha
+ */
+#include "stm32f0xx_hal.h"
+#include "pwm.h"
+
+void PB4_init(void) {
+	__HAL_RCC_GPIOB_CLK_ENABLE();
+	__HAL_RCC_TIM3_CLK_ENABLE();
+
+	GPIOB->MODER &= ~(GPIO_MODER_MODER4_0);
+	GPIOB->MODER |= GPIO_MODER_MODER4_1;
+
+	GPIOB->OTYPER &= ~(GPIO_OTYPER_OT_4);
+
+	GPIOB->OSPEEDR |= GPIO_OSPEEDER_OSPEEDR4_0;
+	GPIOB->OSPEEDR &= ~(GPIO_OSPEEDER_OSPEEDR4_1);
+
+	GPIOB->PUPDR &= ~(GPIO_PUPDR_PUPDR4_0);
+	GPIOB->PUPDR &= ~(GPIO_PUPDR_PUPDR4_1);
+
+	GPIOB->AFR[0] |= (1 << 16);
+	GPIOB->AFR[0] &= ~(1 << 17);
+	GPIOB->AFR[0] &= ~(1 << 18);
+	GPIOB->AFR[0] &= ~(1 << 19);
+
+	GPIOB->MODER &= ~(GPIO_MODER_MODER5_0);
+	GPIOB->MODER |= GPIO_MODER_MODER5_1;
+
+	GPIOB->OTYPER &= ~(GPIO_OTYPER_OT_5);
+
+	GPIOB->OSPEEDR |= GPIO_OSPEEDER_OSPEEDR5_0;
+	GPIOB->OSPEEDR &= ~(GPIO_OSPEEDER_OSPEEDR5_1);
+
+	GPIOB->PUPDR &= ~(GPIO_PUPDR_PUPDR5_0);
+	GPIOB->PUPDR &= ~(GPIO_PUPDR_PUPDR5_1);
+
+	GPIOB->AFR[0] |= (1 << 20);
+	GPIOB->AFR[0] &= ~(1 << 21);
+	GPIOB->AFR[0] &= ~(1 << 22);
+	GPIOB->AFR[0] &= ~(1 << 23);
+
+	GPIOB->MODER &= ~(GPIO_MODER_MODER0_0);
+	GPIOB->MODER |= GPIO_MODER_MODER0_1;
+
+	GPIOB->OTYPER &= ~(GPIO_OTYPER_OT_0);
+
+	GPIOB->OSPEEDR |= GPIO_OSPEEDER_OSPEEDR0_0;
+	GPIOB->OSPEEDR &= ~(GPIO_OSPEEDER_OSPEEDR0_1);
+
+	GPIOB->PUPDR &= ~(GPIO_PUPDR_PUPDR0_0);
+	GPIOB->PUPDR &= ~(GPIO_PUPDR_PUPDR0_1);
+
+	GPIOB->AFR[0] |= (1 << 0);
+	GPIOB->AFR[0] &= ~(1 << 1);
+	GPIOB->AFR[0] &= ~(1 << 2);
+	GPIOB->AFR[0] &= ~(1 << 3);
+
+	GPIOB->MODER &= ~(GPIO_MODER_MODER1_0);
+	GPIOB->MODER |= GPIO_MODER_MODER1_1;
+
+	GPIOB->OTYPER &= ~(GPIO_OTYPER_OT_1);
+
+	GPIOB->OSPEEDR |= GPIO_OSPEEDER_OSPEEDR1_0;
+	GPIOB->OSPEEDR &= ~(GPIO_OSPEEDER_OSPEEDR1_1);
+
+	GPIOB->PUPDR &= ~(GPIO_PUPDR_PUPDR1_0);
+	GPIOB->PUPDR &= ~(GPIO_PUPDR_PUPDR1_1);
+
+	GPIOB->AFR[0] |= (1 << 4);
+	GPIOB->AFR[0] &= ~(1 << 5);
+	GPIOB->AFR[0] &= ~(1 << 6);
+	GPIOB->AFR[0] &= ~(1 << 7);
+}
+
+void pwm_init(void) {
+	PB4_init();
+
+	TIM3->PSC = 23;
+	//TIM3->PSC=48000-1;
+
+	TIM3->ARR = 99;
+	//TIM3->ARR=65534;
+//------------------------------------
+// Interrupt
+	TIM3->DIER |=TIM_DIER_UIE;
+	//TIM3->DIER |=TIM_DIER_CC1IE;
+	//TIM3->DIER |=TIM_DIER_CC2IE;
+	NVIC_EnableIRQ(TIM3_IRQn);
+	NVIC_SetPriority(TIM3_IRQn,2);
+//------------------------------------
+
+	TIM3->CCR1 = 0;
+	TIM3->CCR2 = 0;
+	TIM3->CCR3 = 0;
+	TIM3->CCR4 = 0;
+
+	TIM3->CCMR1 &=~(TIM_CCMR1_CC1S_0);
+	TIM3->CCMR1 &=~(TIM_CCMR1_CC1S_1);
+
+	TIM3->CCMR1 &= ~(TIM_CCMR1_OC1M_0);
+	TIM3->CCMR1 |= TIM_CCMR1_OC1M_1;
+	TIM3->CCMR1 |= TIM_CCMR1_OC1M_2;
+
+	TIM3->CCMR1 |= TIM_CCMR1_OC1PE;
+//----------------------------------------
+
+	TIM3->CCMR1 &=~(TIM_CCMR1_CC2S_0);
+	TIM3->CCMR1 &=~(TIM_CCMR1_CC2S_1);
+
+	TIM3->CCMR1 &= ~(TIM_CCMR1_OC2M_0);
+	TIM3->CCMR1 |= TIM_CCMR1_OC2M_1;
+	TIM3->CCMR1 |= TIM_CCMR1_OC2M_2;
+
+	TIM3->CCMR1 |= TIM_CCMR1_OC2PE;
+//--------------------------------------------
+	TIM3->CCMR2 &=~(TIM_CCMR2_CC3S_0);
+	TIM3->CCMR2 &=~(TIM_CCMR2_CC3S_1);
+
+	TIM3->CCMR2 &= ~(TIM_CCMR2_OC3M_0);
+	TIM3->CCMR2 |= TIM_CCMR2_OC3M_1;
+	TIM3->CCMR2 |= TIM_CCMR2_OC3M_2;
+
+	TIM3->CCMR2 |= TIM_CCMR2_OC3PE;
+//---------------------------------------------
+	TIM3->CCMR2 &=~(TIM_CCMR2_CC4S_0);
+	TIM3->CCMR2 &=~(TIM_CCMR2_CC4S_1);
+
+	TIM3->CCMR2 &= ~(TIM_CCMR2_OC4M_0);
+	TIM3->CCMR2 |= TIM_CCMR2_OC4M_1;
+	TIM3->CCMR2 |= TIM_CCMR2_OC4M_2;
+
+	TIM3->CCMR2 |= TIM_CCMR2_OC4PE;
+//---------------------------------------------
+	//Enable OC1REF and OC2REF OUTPUTS
+	TIM3->CCER |= TIM_CCER_CC1E;
+	TIM3->CCER |= TIM_CCER_CC2E;
+	TIM3->CCER |= TIM_CCER_CC3E;
+	TIM3->CCER |= TIM_CCER_CC4E;
+}
+
+void pwm_enable(void) {
+	TIM3->CR1 |= TIM_CR1_CEN;
+	TIM3->EGR |= TIM_EGR_UG;
+}
+// void pwm_set_duty_cycle(uint32_t duty,Channels_e channel) {
+void pwm_set_duty_cycle(uint32_t duty, Channels_e channel) {
+	switch (channel) {
+	case CHANNEL1:
+		TIM3->CCR1 = duty;
+		break;
+	case CHANNEL2:
+		TIM3->CCR2 = duty;
+		break;
+	case CHANNEL3:
+		TIM3->CCR3 = duty;
+		break;
+	case CHANNEL4:
+		TIM3->CCR4 = duty;
+		break;
+	}
+}
+
+void led_PC8(void) {
+	__HAL_RCC_GPIOC_CLK_ENABLE();
+
+	GPIOC->MODER |=GPIO_MODER_MODER8_0;
+	GPIOC->MODER &=~(GPIO_MODER_MODER8_1);
+
+	GPIOC->OTYPER &= ~(GPIO_OTYPER_OT_8);
+
+	GPIOC->OSPEEDR |= GPIO_OSPEEDER_OSPEEDR8_0;
+	GPIOC->OSPEEDR &= ~(GPIO_OSPEEDER_OSPEEDR8_1);
+
+	GPIOC->PUPDR &= ~(GPIO_PUPDR_PUPDR8_0);
+	GPIOC->PUPDR &= ~(GPIO_PUPDR_PUPDR8_1);
+
+	//GPIOC->ODR ^=GPIO_ODR_8;
+}

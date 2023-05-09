@@ -1,0 +1,7 @@
+core_cm0.h:623:22:__NVIC_EnableIRQ	2
+core_cm0.h:730:22:__NVIC_SetPriority	2
+pwm.c:10:6:PB4_init	1
+pwm.c:79:6:pwm_init	1
+pwm.c:145:6:pwm_enable	1
+pwm.c:150:6:pwm_set_duty_cycle	7
+pwm.c:167:6:led_PC8	1

@@ -1,0 +1,7 @@
+../Core/Src/main.c:64:5:main	8	static
+../Core/Src/main.c:107:13:pwm_sweep	16	static
+../Core/Src/main.c:121:13:pwm_sweep1	16	static
+../Core/Src/main.c:128:6:TIM3_IRQHandler	8	static
+../Core/Src/main.c:141:6:SystemClock_Config	80	static
+../Core/Src/main.c:180:13:MX_GPIO_Init	48	static
+../Core/Src/main.c:227:6:Error_Handler	8	static,ignoring_inline_asm
